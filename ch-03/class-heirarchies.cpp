@@ -6,6 +6,7 @@
 //Huge heirarchies with hundreds of classes, that are both deep 
 // and wide are common 
 
+#include <memory>
 class Shape {
 public:
     virtual Point center() const = o;  // pure virtual 
@@ -121,4 +122,38 @@ void user()
         v.push_back(read_shape(cin));
     draw_all(v);  //call draw() for each element
     rotate_all(v, 45);   // call rotate(45) for each elements.
+    for (auto p : v) delete p;  //remember to delete elements 
 }
+
+// A user might fail to delete the pointer 
+//returned by read_shape
+//The owner of the container of Shape pointers might not delete 
+//objects pointed to.
+
+//functions returning a pointer allocated on the 
+//free store are dangerous. 
+
+//One solution to both problems is to return a standard-library 
+//unique_ptr rather than a naked pointer and store unique_ptrs in the container
+
+unique_ptr<Shape> read_shape(istream& is)  //read shape description from input stream 
+{
+    //read shape header from is and find its Kind k 
+
+    switch(k) {
+    case Kind::circle:
+        //read circle data{Point, int} into p and r
+        return unique_ptr<Shape>{new Circle{p, r}};
+
+    //.. 
+    }
+}
+
+void user() 
+{
+    vector<unique_ptr<Shape>> v;
+    while (cin)
+        v.push_back(read_shape(cin));
+    draw_all(v);      //call draw() for each element
+    rotate_all(v,45);   //cal rotate(45) for each element
+}  //all Shapes implicitly destroyed 
