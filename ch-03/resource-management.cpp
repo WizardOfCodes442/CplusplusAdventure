@@ -11,3 +11,16 @@
 std::vector<thread> my_threads;
 
 Vector init(init n)
+{
+    thread t {heartbeat};        //run heartbeat concurrently (on its own thread)
+    my_threads.push_back(move(t)); // move t into my_threads
+
+    Vector vec(n);
+    for (int i = 0; i < vec.size(); ++) vec[i] =777;
+    return vec;
+}
+
+auto v = init();  //start the heartbeat and initialize v 
+
+//this makes resource handles, such as Vector and thread, an alternative to using pointers
+//the standard library such as unique_ptr are themselves resource handles 
